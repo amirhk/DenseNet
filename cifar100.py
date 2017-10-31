@@ -16,7 +16,7 @@ from keras import backend as K
 
 batch_size = 64
 nb_classes = 100
-nb_epoch = 15
+nb_epoch = 300
 
 img_rows, img_cols = 32, 32
 img_channels = 3
@@ -37,7 +37,7 @@ model = densenet.DenseNet(img_dim, classes=nb_classes, depth=depth, nb_dense_blo
 print("Model created")
 
 model.summary()
-optimizer = Adam(lr=1e-4) # Using Adam instead of SGD to speed up training
+optimizer = Adam(lr=1e-2) # Using Adam instead of SGD to speed up training
 model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=["accuracy"])
 print("Finished compiling")
 print("Building model...")
@@ -72,7 +72,7 @@ generator.fit(trainX, seed=0)
 lr_reducer      = ReduceLROnPlateau(monitor='val_loss', factor=np.sqrt(0.1),
                                     cooldown=0, patience=10, min_lr=0.5e-6)
 early_stopper   = EarlyStopping(monitor='val_acc', min_delta=0.0001, patience=20)
-model_checkpoint= ModelCheckpoint("weights/DenseNet-BC-100-12-CIFAR100.h5", monitor="val_acc", save_best_only=True,
+model_checkpoint= ModelCheckpoint("weights/CIFAR100_DenseNet-BC-22-6.h5", monitor="val_acc", save_best_only=True,
                                   save_weights_only=True)
 
 callbacks=[lr_reducer, early_stopper, model_checkpoint]
