@@ -16,15 +16,15 @@ from keras import backend as K
 
 batch_size = 64
 nb_classes = 100
-nb_epoch = 300
+nb_epoch = 500
 
 img_rows, img_cols = 32, 32
 img_channels = 3
 
 img_dim = (img_channels, img_rows, img_cols) if K.image_dim_ordering() == "th" else (img_rows, img_cols, img_channels)
-depth = 22
+depth = 40
 nb_dense_block = 3
-growth_rate = 6
+growth_rate = 12
 nb_filter = 12
 bottleneck = False
 reduction = 0.0
@@ -37,7 +37,7 @@ model = densenet.DenseNet(img_dim, classes=nb_classes, depth=depth, nb_dense_blo
 print("Model created")
 
 model.summary()
-optimizer = Adam(lr=1e-2) # Using Adam instead of SGD to speed up training
+optimizer = Adam(lr=1e-4) # Using Adam instead of SGD to speed up training
 model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=["accuracy"])
 print("Finished compiling")
 print("Building model...")
@@ -57,7 +57,8 @@ Y_test = np_utils.to_categorical(testY, nb_classes)
 # model.load_weights("weights/DenseNet-BC-100-12-CIFAR100.h5")
 # model.load_weights("weights/DenseNet-DenseNetImageNet121-45epochs.h5")
 # model.load_weights("weights/CIFAR100_DenseNet-40-12_1000_epochs.h5")
-# print("Model loaded.")
+model.load_weights("weights/CIFAR100_DenseNet-40-12_115_epochs_6100.h5")
+print("Model loaded.")
 
 generator = ImageDataGenerator(rotation_range=15,
                                width_shift_range=5./32,
@@ -72,7 +73,7 @@ generator.fit(trainX, seed=0)
 lr_reducer      = ReduceLROnPlateau(monitor='val_loss', factor=np.sqrt(0.1),
                                     cooldown=0, patience=10, min_lr=0.5e-6)
 early_stopper   = EarlyStopping(monitor='val_acc', min_delta=0.0001, patience=20)
-model_checkpoint= ModelCheckpoint("weights/CIFAR100_DenseNet-BC-22-6.h5", monitor="val_acc", save_best_only=True,
+model_checkpoint= ModelCheckpoint("weights/CIFAR100_DenseNet-40-12.h5", monitor="val_acc", save_best_only=True,
                                   save_weights_only=True)
 
 callbacks=[lr_reducer, early_stopper, model_checkpoint]
