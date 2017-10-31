@@ -22,9 +22,9 @@ img_rows, img_cols = 32, 32
 img_channels = 3
 
 img_dim = (img_channels, img_rows, img_cols) if K.image_dim_ordering() == "th" else (img_rows, img_cols, img_channels)
-depth = 40
+depth = 22
 nb_dense_block = 3
-growth_rate = 12
+growth_rate = 6
 nb_filter = 12
 bottleneck = False
 reduction = 0.0
@@ -56,32 +56,32 @@ Y_test = np_utils.to_categorical(testY, nb_classes)
 # Load model
 # model.load_weights("weights/DenseNet-BC-100-12-CIFAR100.h5")
 # model.load_weights("weights/DenseNet-DenseNetImageNet121-45epochs.h5")
-model.load_weights("weights/CIFAR100_DenseNet-40-12_1000_epochs.h5")
-print("Model loaded.")
+# model.load_weights("weights/CIFAR100_DenseNet-40-12_1000_epochs.h5")
+# print("Model loaded.")
 
-# generator = ImageDataGenerator(rotation_range=15,
-#                                width_shift_range=5./32,
-#                                height_shift_range=5./32)
+generator = ImageDataGenerator(rotation_range=15,
+                               width_shift_range=5./32,
+                               height_shift_range=5./32)
 
-# generator.fit(trainX, seed=0)
+generator.fit(trainX, seed=0)
 
-# # Load model
-# # model.load_weights("weights/DenseNet-BC-100-12-CIFAR100.h5")
-# # print("Model loaded.")
+# Load model
+# model.load_weights("weights/DenseNet-BC-100-12-CIFAR100.h5")
+# print("Model loaded.")
 
-# lr_reducer      = ReduceLROnPlateau(monitor='val_loss', factor=np.sqrt(0.1),
-#                                     cooldown=0, patience=10, min_lr=0.5e-6)
-# early_stopper   = EarlyStopping(monitor='val_acc', min_delta=0.0001, patience=20)
-# model_checkpoint= ModelCheckpoint("weights/DenseNet-BC-100-12-CIFAR100.h5", monitor="val_acc", save_best_only=True,
-#                                   save_weights_only=True)
+lr_reducer      = ReduceLROnPlateau(monitor='val_loss', factor=np.sqrt(0.1),
+                                    cooldown=0, patience=10, min_lr=0.5e-6)
+early_stopper   = EarlyStopping(monitor='val_acc', min_delta=0.0001, patience=20)
+model_checkpoint= ModelCheckpoint("weights/DenseNet-BC-100-12-CIFAR100.h5", monitor="val_acc", save_best_only=True,
+                                  save_weights_only=True)
 
-# callbacks=[lr_reducer, early_stopper, model_checkpoint]
+callbacks=[lr_reducer, early_stopper, model_checkpoint]
 
 
-# model.fit_generator(generator.flow(trainX, Y_train, batch_size=batch_size), samples_per_epoch=len(trainX), nb_epoch=nb_epoch,
-#                    callbacks=callbacks,
-#                    validation_data=(testX, Y_test),
-#                    nb_val_samples=testX.shape[0], verbose=1)
+model.fit_generator(generator.flow(trainX, Y_train, batch_size=batch_size), samples_per_epoch=len(trainX), nb_epoch=nb_epoch,
+                   callbacks=callbacks,
+                   validation_data=(testX, Y_test),
+                   nb_val_samples=testX.shape[0], verbose=1)
 
 yPreds = model.predict(testX)
 yPred = np.argmax(yPreds, axis=1)
